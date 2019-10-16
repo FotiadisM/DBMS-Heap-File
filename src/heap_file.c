@@ -17,22 +17,34 @@
 
 HP_ErrorCode HP_Init() {
   //insert code here
-  return HP_OK;
+  if(BF_Init(LRU) != BF_OK) {
+    return HP_OK;
+  }
+  return HP_ERROR;
 }
 
 HP_ErrorCode HP_CreateFile(const char *filename) {
   //insert code here
-  return HP_OK;
+  if(BF_CreateFile(filename) != BF_OK) {
+    return HP_OK;
+  }
+  return HP_ERROR;
 }
 
 HP_ErrorCode HP_OpenFile(const char *fileName, int *fileDesc){
   //insert code here
-  return HP_OK;
+  if(BF_OpenFile(fileName, fileDesc) != BF_OK) {
+    return HP_OK;
+  }
+  return HP_ERROR;
 }
 
 HP_ErrorCode HP_CloseFile(int fileDesc) {
   //insert code here
-  return HP_OK;
+  if(BF_CloseFile(fileDesc) != BF_OK) {
+    return HP_OK;
+  }
+  return HP_ERROR;
 }
 
 HP_ErrorCode HP_InsertEntry(int fileDesc, Record record) {

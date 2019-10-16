@@ -120,4 +120,3 @@ int main() {
   CALL_OR_DIE(HP_CloseFile(fd));
   BF_Close();
 }
-

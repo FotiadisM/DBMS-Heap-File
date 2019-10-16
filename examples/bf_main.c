@@ -56,4 +56,3 @@ int main() {
   CALL_OR_DIE(BF_CloseFile(fd));
   CALL_OR_DIE(BF_Close());
 }
-
