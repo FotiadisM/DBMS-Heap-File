@@ -19,7 +19,7 @@ int main() {
   BF_Block_Init(&block);
 
   CALL_OR_DIE(BF_Init(LRU));
-  CALL_OR_DIE(BF_CreateFile("data.db"))
+  CALL_OR_DIE(BF_CreateFile("data.db"));
   CALL_OR_DIE(BF_OpenFile("data.db", &fd));
 
   char* data;

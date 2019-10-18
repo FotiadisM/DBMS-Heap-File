@@ -9,7 +9,7 @@
 #define CALL_BF(call)       \
 {                           \
   BF_ErrorCode code = call; \
-  if (code != BF_OK) {         \
+  if (code != BF_OK) {      \
     BF_PrintError(code);    \
     return HP_ERROR;        \
   }                         \
@@ -17,38 +17,58 @@
 
 HP_ErrorCode HP_Init() {
   //insert code here
-  if(BF_Init(LRU) != BF_OK) {
-    return HP_OK;
-  }
-  return HP_ERROR;
+  return HP_OK;
 }
 
 HP_ErrorCode HP_CreateFile(const char *filename) {
   //insert code here
-  if(BF_CreateFile(filename) != BF_OK) {
-    return HP_OK;
-  }
-  return HP_ERROR;
+  int fD;
+  char *data;
+  BF_Block *mBlock;
+  BF_Block_Init(&mBlock);
+
+  CALL_BF(BF_CreateFile(filename));
+  CALL_BF(BF_OpenFile(filename, &fD));
+  CALL_BF(BF_AllocateBlock(fD, mBlock));
+  data = BF_Block_GetData(mBlock);
+  memset(data, 0, 4);                              // 4 zeros == Heap File
+
+  BF_Block_SetDirty(mBlock);
+  CALL_BF(BF_UnpinBlock(mBlock));
+  BF_Block_Destroy(&mBlock);
+
+  return HP_OK;
 }
 
 HP_ErrorCode HP_OpenFile(const char *fileName, int *fileDesc){
   //insert code here
-  if(BF_OpenFile(fileName, fileDesc) != BF_OK) {
-    return HP_OK;
-  }
-  return HP_ERROR;
+  CALL_BF(BF_OpenFile(fileName, fileDesc))
+  return HP_OK;;
 }
 
 HP_ErrorCode HP_CloseFile(int fileDesc) {
   //insert code here
-  if(BF_CloseFile(fileDesc) != BF_OK) {
-    return HP_OK;
-  }
-  return HP_ERROR;
+  CALL_BF(BF_CloseFile(fileDesc));
+  return HP_OK;
 }
 
 HP_ErrorCode HP_InsertEntry(int fileDesc, Record record) {
   //insert code here
+  int block_num;
+  char *data;
+  BF_Block *mBlock;
+  BF_Block_Init(&mBlock);
+
+  CALL_BF(BF_GetBlockCounter(fileDesc, &block_num));
+  if(block_num == 1) {
+    CALL_BF(BF_AllocateBlock(fileDesc, mBlock));
+    data = BF_Block_GetData(mBlock);
+  }
+  else {
+    CALL_BF(BF_GetBlock(fileDesc, block_num, mBlock));
+    data = BF_Block_GetData(mBlock);
+  }
+
   return HP_OK;
 }
 
