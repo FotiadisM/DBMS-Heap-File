@@ -55,6 +55,7 @@ HP_ErrorCode HP_CloseFile(int fileDesc) {
 HP_ErrorCode HP_InsertEntry(int fileDesc, Record record) {
   //insert code here
   int block_num;
+  char records_num;
   char *data;
   BF_Block *mBlock;
   BF_Block_Init(&mBlock);
@@ -63,11 +64,38 @@ HP_ErrorCode HP_InsertEntry(int fileDesc, Record record) {
   if(block_num == 1) {
     CALL_BF(BF_AllocateBlock(fileDesc, mBlock));
     data = BF_Block_GetData(mBlock);
+    memset(data, 1, 1);
+    *(data+1) = record.id;
+    memcpy(data + 1 + sizeof(record.id), record.name, sizeof(record.name));
+    memcpy(data + 1 + sizeof(record.id) + sizeof(record.name), record.surname, sizeof(record.surname));
+    memcpy(data + 1 + sizeof(record.id) + sizeof(record.name) + sizeof(record.surname), record.city, sizeof(record.city));
   }
   else {
-    CALL_BF(BF_GetBlock(fileDesc, block_num, mBlock));
+    CALL_BF(BF_GetBlock(fileDesc, block_num-1, mBlock));
     data = BF_Block_GetData(mBlock);
+    records_num = *data;
+    if(records_num == 8) {
+      CALL_BF(BF_UnpinBlock(mBlock));
+      CALL_BF(BF_AllocateBlock(fileDesc, mBlock));
+      data = BF_Block_GetData(mBlock);
+      memset(data, 1, 1);
+      *(data + 1) = record.id;
+      memcpy(data + 1 + sizeof(record.id), record.name, sizeof(record.name));
+      memcpy(data + 1 + sizeof(record.id) + sizeof(record.name), record.surname, sizeof(record.surname));
+      memcpy(data + 1 + sizeof(record.id) + sizeof(record.name) + sizeof(record.surname), record.city, sizeof(record.city));
+    }
+    else {
+      memset(data, records_num+1, 1);
+      *(data + 1 + records_num*sizeof(Record)) = record.id;
+      memcpy(data + 1 + records_num*sizeof(Record) + sizeof(record.id), record.name, sizeof(record.name));
+      memcpy(data + 1 + records_num*sizeof(Record) + sizeof(record.id) + sizeof(record.name), record.surname, sizeof(record.surname));
+      memcpy(data + 1 + records_num*sizeof(Record) + sizeof(record.id) + sizeof(record.name) + sizeof(record.surname), record.city, sizeof(record.city));
+    }
   }
+
+  BF_Block_SetDirty(mBlock);
+  CALL_BF(BF_UnpinBlock(mBlock));
+  BF_Block_Destroy(&mBlock);
 
   return HP_OK;
 }
