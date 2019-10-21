@@ -93,5 +93,6 @@ HP_ErrorCode HP_GetEntry(
   Record *record  /* δομή στην οποία επιστρέφεται η εγγραφή */
   );
 
+HP_ErrorCode HP_PrintUniversal(int fileDesc);
 
 #endif // HEAP_FILE_H

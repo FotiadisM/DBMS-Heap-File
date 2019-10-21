@@ -111,6 +111,7 @@ int main() {
 
   printf("RUN PrintAllEntries\n");
   CALL_OR_DIE(HP_PrintAllEntries(fd, "city", (void *)"San Francisco"));
+  // CALL_OR_DIE(HP_PrintUniversal(fd));
 
   printf("Get Entry with rowid 1000\n");
   CALL_OR_DIE(HP_GetEntry(fd, 1000, &record));

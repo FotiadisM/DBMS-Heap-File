@@ -50,7 +50,7 @@ int main() {
     data = BF_Block_GetData(block);
     printf("block = %d and data = %d\n", i, data[i % BF_BUFFER_SIZE]);
     CALL_OR_DIE(BF_UnpinBlock(block));
-  }
+  // }
 
   BF_Block_Destroy(&block);
   CALL_OR_DIE(BF_CloseFile(fd));
