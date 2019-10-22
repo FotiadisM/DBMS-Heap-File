@@ -32,7 +32,7 @@ HP_ErrorCode HP_CreateFile(const char *filename) {
   CALL_BF(BF_AllocateBlock(fD, mBlock));
   data = BF_Block_GetData(mBlock);
   memset(data, '\0', 512);
-  memset(data, 1, 4);                              // 4 zeros == Heap File
+  memcpy(data, "HP", 2);                              // HP == Heap File
 
   BF_Block_SetDirty(mBlock);
   CALL_BF(BF_UnpinBlock(mBlock));
@@ -43,7 +43,21 @@ HP_ErrorCode HP_CreateFile(const char *filename) {
 
 HP_ErrorCode HP_OpenFile(const char *fileName, int *fileDesc){
   //insert code here
+  char *data;
+  char code[2];
+  BF_Block *mBlock;
+  BF_Block_Init(&mBlock);
+
   CALL_BF(BF_OpenFile(fileName, fileDesc))
+  CALL_BF(BF_GetBlock(*fileDesc, 0, mBlock));
+  data = BF_Block_GetData(mBlock);
+  memcpy(code, data, 2);
+  if(strcmp(code, "HP")) {
+    return HP_ERROR;
+  }
+
+  CALL_BF(BF_UnpinBlock(mBlock));
+  BF_Block_Destroy(&mBlock);
   return HP_OK;;
 }
 
@@ -145,7 +159,13 @@ HP_ErrorCode HP_PrintAllEntries(int fileDesc, char *attrName, void* value) {
       int id;
       char name[15], sur[20], city[20];
 
-      if(!strcmp(attrName, "city")) {
+      if(value == NULL) {
+        printf("-----------------------\n In Block number : %d\n Record number : %d\n\n", i, j);
+        HP_PrintRecord(data, j);
+        printf("-----------------------\n");
+      }
+
+      else if(!strcmp(attrName, "city")) {
         memcpy(city, data + j*59 + 40, 20);
         if(!strcmp(city, (char*)value)) {
           printf("-----------------------\n In Block number : %d\n Record number : %d\n\n", i, j);
