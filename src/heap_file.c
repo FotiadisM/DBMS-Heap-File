@@ -85,7 +85,6 @@ HP_ErrorCode HP_InsertEntry(int fileDesc, Record record) {
     memset(data+2, (record.id >> 8) & 0xFF, 1);
     memset(data+3, (record.id >> 16) & 0xFF, 1);
     memset(data+4, (record.id >> 24) & 0xFF, 1);
-
     memcpy(data + 1 + 4, record.name, 15);
     memcpy(data + 1 + 4 + 15, record.surname, 20);
     memcpy(data + 1 + 4 + 15 + 20, record.city, 20);
@@ -165,6 +164,22 @@ HP_ErrorCode HP_PrintAllEntries(int fileDesc, char *attrName, void* value) {
         printf("-----------------------\n");
       }
 
+      else if(!strcmp(attrName, "name")) {
+        memcpy(name, data + j*59 + 5, 15);
+        if(!strcmp(name, (char*)value)) {
+          printf("-----------------------\n In Block number : %d\n Record number : %d\n\n", i, j);
+          HP_PrintRecord(data, j);
+          printf("-----------------------\n");
+        }
+      }
+      else if(!strcmp(attrName, "surname")) {
+        memcpy(sur, data + j*59 + 20, 20);
+        if(!strcmp(sur, (char*)value)) {
+          printf("-----------------------\n In Block number : %d\n Record number : %d\n\n", i, j);
+          HP_PrintRecord(data, j);
+          printf("-----------------------\n");
+        }
+      }
       else if(!strcmp(attrName, "city")) {
         memcpy(city, data + j*59 + 40, 20);
         if(!strcmp(city, (char*)value)) {
